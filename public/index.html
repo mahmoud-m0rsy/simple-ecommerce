@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SimpleShop — Everyday essentials, delivered.</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <!-- ============== Header ============== -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="/">SimpleShop</a>
+
+      <form class="search" id="search-form" role="search">
+        <input id="search-input" type="search" placeholder="Search products..." aria-label="Search products" />
+        <button type="submit" class="btn btn-primary">Search</button>
+      </form>
+
+      <nav class="header-actions">
+        <button class="header-link" id="open-auth" type="button">
+          <span class="muted">Hello,</span>
+          <strong id="auth-label">Sign in</strong>
+        </button>
+        <button class="header-link cart-link" id="open-cart" type="button">
+          <span class="cart-icon" aria-hidden="true">&#128722;</span>
+          <strong>Cart</strong>
+          <span class="badge" id="cart-badge">0</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ============== Main ============== -->
+  <main class="container">
+    <section class="hero">
+      <h1>Everyday essentials, delivered to your door.</h1>
+      <p>Cash on Delivery. No accounts required to browse.</p>
+    </section>
+
+    <section class="grid-section">
+      <h2 class="section-title">Products</h2>
+      <div id="product-grid" class="product-grid" aria-live="polite">
+        <!-- product cards injected by app.js -->
+      </div>
+      <p id="empty-state" class="empty-state" hidden>No products found.</p>
+    </section>
+  </main>
+
+  <!-- ============== Footer ============== -->
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; 2026 SimpleShop. All prices in USD. Payment: Cash on Delivery only.</p>
+    </div>
+  </footer>
+
+  <!-- ============== Cart Modal ============== -->
+  <div class="modal" id="cart-modal" hidden>
+    <div class="modal-backdrop" data-close="cart-modal"></div>
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="cart-title">
+      <div class="modal-header">
+        <h3 id="cart-title">Your Cart</h3>
+        <button class="modal-close" data-close="cart-modal" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <ul id="cart-items" class="cart-items"></ul>
+        <p id="cart-empty" class="muted">Your cart is empty.</p>
+        <div class="cart-summary">
+          <div><span>Subtotal</span><strong id="cart-subtotal">$0.00</strong></div>
+          <div><span>Shipping</span><strong>Free</strong></div>
+          <div class="cart-total"><span>Total (COD)</span><strong id="cart-total">$0.00</strong></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-close="cart-modal" type="button">Continue shopping</button>
+        <button class="btn btn-primary" id="go-checkout" type="button">Checkout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============== Auth Modal ============== -->
+  <div class="modal" id="auth-modal" hidden>
+    <div class="modal-backdrop" data-close="auth-modal"></div>
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+      <div class="modal-header">
+        <h3 id="auth-title">Sign in to your account</h3>
+        <button class="modal-close" data-close="auth-modal" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="tabs" role="tablist">
+          <button class="tab active" data-tab="login" role="tab" type="button">Login</button>
+          <button class="tab" data-tab="signup" role="tab" type="button">Create account</button>
+        </div>
+
+        <form id="login-form" class="form" data-tab-pane="login">
+          <label>Email <input type="email" name="email" required autocomplete="email" /></label>
+          <label>Password <input type="password" name="password" required autocomplete="current-password" minlength="6" /></label>
+          <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+        </form>
+
+        <form id="signup-form" class="form" data-tab-pane="signup" hidden>
+          <label>Full name <input type="text" name="fullName" autocomplete="name" /></label>
+          <label>Email <input type="email" name="email" required autocomplete="email" /></label>
+          <label>Password <input type="password" name="password" required autocomplete="new-password" minlength="6" /></label>
+          <button class="btn btn-primary btn-block" type="submit">Create account</button>
+        </form>
+
+        <p id="auth-error" class="error" hidden></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============== Checkout Modal ============== -->
+  <div class="modal" id="checkout-modal" hidden>
+    <div class="modal-backdrop" data-close="checkout-modal"></div>
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
+      <div class="modal-header">
+        <h3 id="checkout-title">Checkout — Cash on Delivery</h3>
+        <button class="modal-close" data-close="checkout-modal" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="muted">Pay with cash when your order is delivered. Please confirm your shipping details below.</p>
+        <form id="checkout-form" class="form">
+          <label>Full name <input type="text" name="fullName" required /></label>
+          <label>Phone <input type="tel" name="phone" required /></label>
+          <label>Shipping address <textarea name="address" rows="3" required></textarea></label>
+          <label>Notes (optional) <textarea name="notes" rows="2"></textarea></label>
+          <div class="checkout-total">
+            <span>Total to pay on delivery</span>
+            <strong id="checkout-total">$0.00</strong>
+          </div>
+          <button class="btn btn-primary btn-block" type="submit">Place order (COD)</button>
+        </form>
+        <p id="checkout-error" class="error" hidden></p>
+        <p id="checkout-success" class="success" hidden></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/cart.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
