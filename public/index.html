@@ -10,7 +10,7 @@
   <!-- ============== Header ============== -->
   <header class="site-header">
     <div class="header-inner">
-      <a class="brand" href="/">SimpleShop</a>
+      <a class="brand" href="/">Convera</a>
 
       <form class="search" id="search-form" role="search">
         <input id="search-input" type="search" placeholder="Search products..." aria-label="Search products" />
@@ -18,10 +18,53 @@
       </form>
 
       <nav class="header-actions">
-        <button class="header-link" id="open-auth" type="button">
-          <span class="muted">Hello,</span>
-          <strong id="auth-label">Sign in</strong>
+        <!-- ============== User Dropdown ============== -->
+        <div class="user-menu" id="user-menu">
+          <button class="header-link" id="open-auth" type="button" aria-haspopup="menu" aria-expanded="false">
+            <span class="muted">Hello,</span>
+            <strong id="auth-label">Sign in</strong>
+          </button>
+          <div class="user-dropdown" id="user-dropdown" role="menu" hidden>
+            <div class="user-dropdown-header">
+              <div class="user-avatar" id="user-avatar" aria-hidden="true">&#128100;</div>
+              <div class="user-info">
+                <div class="user-name" id="user-dropdown-name">Guest</div>
+                <div class="user-email" id="user-dropdown-email">Not signed in</div>
+              </div>
+            </div>
+            <ul class="user-dropdown-list">
+              <li>
+                <button type="button" class="user-dropdown-item" id="menu-my-orders" role="menuitem">
+                  <span class="dd-icon" aria-hidden="true">&#128230;</span>
+                  <span>My Orders</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="user-dropdown-item" id="menu-wishlist" role="menuitem">
+                  <span class="dd-icon" aria-hidden="true">&#10084;&#65039;</span>
+                  <span>Wishlist</span>
+                  <span class="dd-badge" id="user-dropdown-wishlist-count">0</span>
+                </button>
+              </li>
+              <li class="user-dropdown-separator" role="separator"></li>
+              <li>
+                <button type="button" class="user-dropdown-item user-dropdown-item-danger" id="menu-logout" role="menuitem">
+                  <span class="dd-icon" aria-hidden="true">&#128682;</span>
+                  <span>Logout</span>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- ============== Wishlist Button ============== -->
+        <button class="header-link wishlist-link" id="open-wishlist" type="button" aria-label="Wishlist">
+          <span class="wishlist-icon" aria-hidden="true">&#10084;&#65039;</span>
+          <strong>Wishlist</strong>
+          <span class="badge badge-wishlist" id="wishlist-badge">0</span>
         </button>
+
+        <!-- ============== Cart Button ============== -->
         <button class="header-link cart-link" id="open-cart" type="button">
           <span class="cart-icon" aria-hidden="true">&#128722;</span>
           <strong>Cart</strong>
@@ -40,6 +83,21 @@
 
     <section class="grid-section">
       <h2 class="section-title">Products</h2>
+
+      <!-- ============== Categories Filter Bar ==============
+           The visible label and `data-category` value MUST match the
+           string stored in the database `products.category` column
+           (case-sensitive). The `all` value is a UI-only sentinel that
+           short-circuits the filter in app.js. -->
+      <div class="category-bar" id="category-bar" role="tablist" aria-label="Filter by category">
+        <button type="button" class="category-chip active" data-category="all" role="tab" aria-selected="true">All</button>
+        <button type="button" class="category-chip" data-category="Mobiles" role="tab" aria-selected="false">Mobiles</button>
+        <button type="button" class="category-chip" data-category="Cameras" role="tab" aria-selected="false">Cameras</button>
+        <button type="button" class="category-chip" data-category="Clothing" role="tab" aria-selected="false">Clothing</button>
+        <button type="button" class="category-chip" data-category="Accessories" role="tab" aria-selected="false">Accessories</button>
+        <button type="button" class="category-chip" data-category="Electronics" role="tab" aria-selected="false">Electronics</button>
+      </div>
+
       <div id="product-grid" class="product-grid" aria-live="polite">
         <!-- product cards injected by app.js -->
       </div>
@@ -78,6 +136,24 @@
     </div>
   </div>
 
+  <!-- ============== Wishlist Modal ============== -->
+  <div class="modal" id="wishlist-modal" hidden>
+    <div class="modal-backdrop" data-close="wishlist-modal"></div>
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="wishlist-title">
+      <div class="modal-header">
+        <h3 id="wishlist-title">Your Wishlist</h3>
+        <button class="modal-close" data-close="wishlist-modal" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <ul id="wishlist-items" class="wishlist-items"></ul>
+        <p id="wishlist-empty" class="muted">Your wishlist is empty.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-close="wishlist-modal" type="button">Continue shopping</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ============== Auth Modal ============== -->
   <div class="modal" id="auth-modal" hidden>
     <div class="modal-backdrop" data-close="auth-modal"></div>
@@ -110,6 +186,43 @@
     </div>
   </div>
 
+  <!-- ============== Logout Modal ============== -->
+  <div class="modal" id="logout-modal" hidden>
+    <div class="modal-backdrop" data-close="logout-modal"></div>
+    <div class="modal-panel modal-panel-sm" role="dialog" aria-modal="true" aria-labelledby="logout-title">
+      <div class="modal-header">
+        <h3 id="logout-title">Sign out?</h3>
+        <button class="modal-close" data-close="logout-modal" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to sign out of your account?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-close="logout-modal" type="button">Cancel</button>
+        <button class="btn btn-danger" id="confirm-logout" type="button">Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============== Orders Modal ============== -->
+  <div class="modal" id="orders-modal" hidden>
+    <div class="modal-backdrop" data-close="orders-modal"></div>
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="orders-title">
+      <div class="modal-header">
+        <h3 id="orders-title">My Orders</h3>
+        <button class="modal-close" data-close="orders-modal" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <ul id="orders-list" class="orders-list"></ul>
+        <p id="orders-empty" class="muted">You have no orders yet.</p>
+        <p id="orders-error" class="error" hidden></p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-close="orders-modal" type="button">Close</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ============== Checkout Modal ============== -->
   <div class="modal" id="checkout-modal" hidden>
     <div class="modal-backdrop" data-close="checkout-modal"></div>
@@ -137,8 +250,13 @@
     </div>
   </div>
 
+  <!-- ============== Toast Container ============== -->
+  <div class="toast-container" id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
   <script src="/js/api.js"></script>
   <script src="/js/cart.js"></script>
+  <script src="/js/wishlist.js"></script>
+  <script src="/js/toast.js"></script>
   <script src="/js/auth.js"></script>
   <script src="/js/app.js"></script>
 </body>

@@ -1,7 +1,7 @@
 // Product controller — read-only catalog.
 // Expected table:
 //   products (id uuid pk, name text, description text, price numeric,
-//             image_url text, stock int, created_at timestamptz)
+//             image_url text, stock int, category text, created_at timestamptz)
 const { supabase } = require('../config/supabase');
 
 // GET /api/products
@@ -11,7 +11,7 @@ async function listProducts(req, res, next) {
     const q = (req.query.q || '').toString().trim();
     let query = supabase
       .from('products')
-      .select('id, name, description, price, image_url, stock, created_at')
+      .select('*')
       .order('created_at', { ascending: false });
 
     if (q) query = query.ilike('name', `%${q}%`);
@@ -30,7 +30,7 @@ async function getProduct(req, res, next) {
     const { id } = req.params;
     const { data, error } = await supabase
       .from('products')
-      .select('id, name, description, price, image_url, stock, created_at')
+      .select('*')
       .eq('id', id)
       .maybeSingle();
     if (error) return next(error);
@@ -42,3 +42,4 @@ async function getProduct(req, res, next) {
 }
 
 module.exports = { listProducts, getProduct };
+

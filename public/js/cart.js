@@ -37,7 +37,8 @@
   function add(product, quantity = 1) {
     const items = read();
     const idx = items.findIndex((i) => i.productId === product.id);
-    if (idx >= 0) {
+    let alreadyInCart = idx >= 0;
+    if (alreadyInCart) {
       items[idx].quantity = (Number(items[idx].quantity) || 0) + quantity;
     } else {
       items.push({
@@ -49,7 +50,9 @@
       });
     }
     write(items);
+    bumpBadge();
     render();
+    return { alreadyInCart, quantity: items[idx >= 0 ? idx : items.length - 1].quantity };
   }
 
   function setQty(productId, qty) {
@@ -75,6 +78,16 @@
   function clear() {
     write([]);
     render();
+  }
+
+  function bumpBadge() {
+    if (!cartBadge) return;
+    cartBadge.textContent = String(totalQty(read()));
+    cartBadge.classList.remove('bump');
+    // Force reflow so the animation can re-trigger.
+    void cartBadge.offsetWidth;
+    cartBadge.classList.add('bump');
+    setTimeout(() => cartBadge.classList.remove('bump'), 250);
   }
 
   function render() {
@@ -178,7 +191,12 @@
       clear();
       closeCart();
       checkoutModal.hidden = true;
-      alert(`Order placed successfully! (Cash on Delivery)\nOrder ID: ${result.order.id}`);
+      if (window.toast) {
+        window.toast.success(
+          'Order placed',
+          `Cash on Delivery — Order #${(result.order.id || '').slice(0, 8)}`
+        );
+      }
       checkoutForm.reset();
     } catch (err) {
       if (checkoutError) {
